@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Taxonomy Schema",
+  "description": "Schema for taxonomy terms and hierarchies used by EKC for classification, discovery, and policy enforcement.",
+  "type": "object",
+  "required": ["termId", "type", "labels"],
+  "properties": {
+    "termId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+:[a-z0-9-]+$",
+      "description": "Unique term identifier (namespace:id format, e.g., country:EG, industry:hotels)."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["country", "industry", "language", "knowledgeType", "documentType", "category", "tag"],
+      "description": "Taxonomy dimension."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "Taxonomy version (semantic versioning)."
+    },
+    "labels": {
+      "type": "object",
+      "description": "Human-readable labels in multiple languages.",
+      "properties": {
+        "en": {"type": "string"},
+        "ar": {"type": "string"},
+        "fr": {"type": "string"}
+      },
+      "required": ["en"],
+      "additionalProperties": {"type": "string"}
+    },
+    "description": {
+      "type": "object",
+      "description": "Longer descriptions per language.",
+      "additionalProperties": {"type": "string"}
+    },
+    "parents": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Parent term IDs (multi-parent hierarchies allowed)."
+    },
+    "children": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Child term IDs."
+    },
+    "mappings": {
+      "type": "object",
+      "description": "External identifier mappings (e.g., ISO 3166 for countries, NAICS for industries).",
+      "additionalProperties": {"type": "string"}
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Free-form metadata for use by consumers and governance.",
+      "additionalProperties": true
+    },
+    "deprecated": {
+      "type": "boolean",
+      "description": "Whether term is deprecated in favor of another term."
+    },
+    "deprecatedBy": {
+      "type": "string",
+      "description": "New term ID if this term is deprecated."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When term was created."
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When term was last updated."
+    }
+  },
+  "additionalProperties": false
+}

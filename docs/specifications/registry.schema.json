@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Registry Entity Schema (generic)",
+  "description": "Generic schema for entities stored in EKC registries (Source, Dataset, Pack, Template, Schema, Taxonomy, Version).",
+  "type": "object",
+  "required": ["id", "type", "version", "metadata", "createdAt"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+      "description": "Unique entity identifier (lowercase alphanumeric and hyphens)."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["Source", "Dataset", "Pack", "Template", "Schema", "Taxonomy", "Version", "Signer"],
+      "description": "Entity type."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$|^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "Semantic version (major.minor.patch) or snapshot timestamp (ISO 8601)."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Entity metadata (structure depends on type).",
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Provenance metadata (who created, when, why).",
+      "properties": {
+        "author": {
+          "type": "string",
+          "description": "Author or creator."
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "System or actor that created entry."
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When entity was created (UTC, ISO 8601)."
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When entity was last updated (UTC, ISO 8601)."
+    },
+    "deprecated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether entity is deprecated."
+    },
+    "deprecatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When entity was deprecated."
+    },
+    "deprecationMessage": {
+      "type": "string",
+      "description": "Reason for deprecation and suggested alternative."
+    },
+    "tenant": {
+      "type": "string",
+      "description": "Tenant ID for multi-tenant deployments (optional, default: default tenant)."
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Free-form tags for search and filtering."
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["private", "internal", "public"],
+      "default": "internal",
+      "description": "Visibility level."
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of reference (e.g., dependsOn, relatedTo)."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Reference (e.g., packId, sourceId)."
+          }
+        }
+      },
+      "description": "References to other registry entities."
+    }
+  },
+  "additionalProperties": false
+}
