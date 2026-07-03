@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Knowledge Pack Structure Schema",
+  "description": "Canonical structure and contents of a Knowledge Pack produced by EKC.",
+  "type": "object",
+  "properties": {
+    "packId-version": {
+      "type": "object",
+      "description": "Root directory: {packId}-{version}/",
+      "properties": {
+        "manifests": {
+          "type": "object",
+          "description": "Manifest directory",
+          "properties": {
+            "manifest.json": {
+              "type": "object",
+              "description": "Core pack metadata (see manifest.schema.json)"
+            },
+            "manifest.sig": {
+              "type": "string",
+              "description": "Detached signature over manifest.json (base64-encoded or hex)"
+            }
+          },
+          "required": ["manifest.json", "manifest.sig"]
+        },
+        "content": {
+          "type": "object",
+          "description": "Knowledge artifacts",
+          "properties": {
+            "articles": {
+              "type": "object",
+              "description": "Directory of article documents (e.g., .md files)"
+            },
+            "schemas": {
+              "type": "object",
+              "description": "JSON schemas for artifact types"
+            },
+            "assets": {
+              "type": "object",
+              "description": "Media assets (images, PDFs, etc.)"
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Pack metadata and supporting info",
+          "properties": {
+            "provenance.json": {
+              "type": "object",
+              "description": "Extended provenance data (generation environment, runtime versions)",
+              "properties": {
+                "sourceId": { "type": "string" },
+                "generationRunId": { "type": "string", "format": "uuid" },
+                "generatorVersion": { "type": "string" },
+                "environment": {
+                  "type": "object",
+                  "description": "Snapshot of generator environment (runtime, library versions)"
+                },
+                "timestamp": { "type": "string", "format": "date-time" }
+              }
+            },
+            "taxonomy.json": {
+              "type": "object",
+              "description": "Resolved taxonomy mappings and classifications"
+            }
+          }
+        },
+        "checksums": {
+          "type": "object",
+          "description": "Integrity checksums",
+          "properties": {
+            "checksums.sha256": {
+              "type": "string",
+              "description": "Canonical list of SHA-256 checksums (one per line: path checksum)"
+            }
+          }
+        },
+        "license": {
+          "type": "object",
+          "description": "Licensing information",
+          "properties": {
+            "license.txt": {
+              "type": "string",
+              "description": "Human-readable license text"
+            }
+          }
+        },
+        "README.md": {
+          "type": "string",
+          "description": "Human-readable pack description and usage guide"
+        }
+      },
+      "required": ["manifests", "content", "checksums"]
+    }
+  },
+  "description": "Example structure (not exhaustive). Actual packs will have additional files. Consumers must accept any valid files within the declared directory."
+}

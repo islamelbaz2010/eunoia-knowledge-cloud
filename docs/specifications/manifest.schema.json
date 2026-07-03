@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Knowledge Pack Manifest Schema",
+  "description": "Core manifest.json format for Knowledge Packs produced by EKC. Defines pack identity, versioning, components, provenance, compatibility, and optional monetization.",
+  "type": "object",
+  "required": [
+    "packId",
+    "version",
+    "createdAt",
+    "components",
+    "provenance",
+    "compatibility"
+  ],
+  "properties": {
+    "packId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+      "description": "Unique, stable pack identifier (lowercase alphanumeric and hyphens)."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "description": "Semantic version (MAJOR.MINOR.PATCH)."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when pack was created (UTC)."
+    },
+    "components": {
+      "type": "array",
+      "description": "List of artifacts included in the pack.",
+      "items": {
+        "type": "object",
+        "required": ["path", "contentType", "checksum", "schemaRef"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Relative path within pack (e.g., content/articles/001.md)."
+          },
+          "contentType": {
+            "type": "string",
+            "description": "MIME type (e.g., text/markdown, application/json, image/png)."
+          },
+          "checksum": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$",
+            "description": "SHA-256 checksum of artifact (format: sha256:hex)."
+          },
+          "schemaRef": {
+            "type": "string",
+            "description": "Reference to schema in Schema Registry (e.g., schema:article:v1)."
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "File size in bytes (optional)."
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["sourceRef", "generationRunId", "author"],
+      "properties": {
+        "sourceRef": {
+          "type": "string",
+          "description": "Reference to Source Registry entry (e.g., source:wikipedia:v1)."
+        },
+        "generationRunId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique ID of generator run that produced this pack."
+        },
+        "generatorVersion": {
+          "type": "string",
+          "description": "Version of Generator that produced pack."
+        },
+        "templateRef": {
+          "type": "string",
+          "description": "Reference to Template Registry (e.g., template:article-pack:v1)."
+        },
+        "author": {
+          "type": "string",
+          "description": "Identity of person/system that initiated pack generation."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When generation completed."
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "Minimum consumer contract version (MAJOR.MINOR, e.g., 1.0)."
+        },
+        "maximum": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "Maximum consumer contract version (MAJOR.MINOR, e.g., 1.5)."
+        }
+      }
+    },
+    "taxonomy": {
+      "type": "object",
+      "description": "Taxonomy classification (optional).",
+      "properties": {
+        "countries": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Applicable countries (ISO country codes or taxonomy IDs)."
+        },
+        "industries": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Applicable industries (taxonomy IDs)."
+        },
+        "languages": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Supported languages (BCP-47 codes)."
+        },
+        "knowledgeTypes": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["procedural", "regulatory", "reference", "product", "training"]},
+          "description": "Knowledge type classifications."
+        },
+        "documentTypes": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["article", "spec", "checklist", "template", "policy"]},
+          "description": "Document type classifications."
+        },
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "User-defined tags for discovery and curation."
+        }
+      }
+    },
+    "monetization": {
+      "type": "object",
+      "description": "Optional monetization metadata for marketplace.",
+      "properties": {
+        "licenseType": {
+          "type": "string",
+          "enum": ["free", "paid", "enterprise"],
+          "description": "License classification."
+        },
+        "price": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Price (if applicable, in base currency units, e.g., USD cents)."
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code."
+        },
+        "entitlementId": {
+          "type": "string",
+          "description": "Reference to entitlement definition in billing system."
+        },
+        "billingMetadata": {
+          "type": "object",
+          "description": "Opaque metadata for billing system (e.g., SKU, cost category)."
+        }
+      }
+    },
+    "license": {
+      "type": "object",
+      "required": ["licenseRef"],
+      "properties": {
+        "licenseRef": {
+          "type": "string",
+          "description": "Identifier of license type (e.g., CC-BY-4.0, proprietary)."
+        },
+        "licenseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to full license text."
+        },
+        "licenseTextPath": {
+          "type": "string",
+          "description": "Path to license text within pack (e.g., license/license.txt)."
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "description": "Optional lifecycle and retention metadata.",
+      "properties": {
+        "recommendedRetentionDays": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Recommended retention period in days."
+        },
+        "regions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Regions where pack must/cannot be replicated."
+        },
+        "exportControl": {
+          "type": "string",
+          "description": "Export control classification if applicable."
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Namespace for custom, non-standard extensions. Consumers ignore unknown namespaces.",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
